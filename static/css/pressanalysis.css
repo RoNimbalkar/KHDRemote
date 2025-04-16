@@ -1,0 +1,439 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Lucida Sans', sans-serif;
+    /*background: linear-gradient(90deg, rgba(9,8,8,1) 0%, rgba(236,236,236,1) 26%, rgba(98,93,93,1) 100%);
+    background: rgb(7,7,8);
+    background: linear-gradient(90deg, rgba(7,7,8,1) 0%, rgba(148,140,140,1) 50%, rgba(31,30,28,1) 100%);
+    background: rgb(0,0,0);
+    background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(96,91,91,1) 50%, rgba(0,0,0,1) 100%);*/
+    background: rgb(0,0,0);
+    background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(130,118,120,1) 68%, rgba(0,0,0,1) 100%, rgba(255,255,255,1) 100%);
+}
+
+.backgrnd {
+    position: relative;
+    left: 400px;
+    top: 40px;
+    height: 450px;
+    width: 1300px;
+    background: transparent;
+}
+
+#heatmap {
+    width: 1300px;
+    height: 495px;
+    position: absolute;
+    left: 425px;
+    top: 210px;
+}
+
+.runlabel{
+    position: relative;
+    left: 38px;
+    top: 343px;
+    color: white;
+    font-size: 20px;
+}
+
+.scanlabel{
+    position: relative;
+    left: 38px;
+    top: 355px;
+    color: white;
+    font-size: 20px;
+}
+
+.rpmlabel{
+    position: relative;
+    left: -226px;
+    top: 407px;
+    color: white;
+    font-size: 20px;
+}
+
+.scanprogress{
+    position: relative;
+    left: 60px;
+    top: 360px;
+    height: 25px;
+    color: white;
+    background-color: #f1f1f1;
+}
+
+.led {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    left: 164px;
+    top: 325px;
+    border-radius: 50%;
+    background-color: red; /* Default color */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.heatmapCanvas{
+    position: relative;
+    top: 150px;
+    left: 650px;
+    max-width:900px;
+}
+
+.heatmapCanvas object{
+    width: 900px;
+    height: 500px;
+}
+
+.rpmtext{
+    position: relative;
+    left: -160px;
+    top: 407px;
+    height: 28px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.green {
+    background-color: green;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}
+
+.dropbtn {
+    background-color: #AA0000;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: default;
+    width: 280px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    left: 38px;
+    top: 250px;
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 162px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    width: 280px;
+    /* Always visible */
+    display: block;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+/* Selected roller highlight */
+.dropdown-content a.selected {
+    background-color: #c1bfbf;
+    color: white;
+}
+
+rect{
+    fill: #181C14;
+    stroke: #181C14;
+}
+
+polygon{
+    fill:  #686868;
+    stroke: #686868;
+}
+
+.container {
+    display: flex;
+    position: relative;
+    align-items: center;
+    gap: 10px;
+    left: 1150px;
+    top: 75px;
+    width: 100px;
+}
+.color-bar {
+    width: 30px;
+    height: 300px;
+    background: linear-gradient(to bottom, 
+        #B0B0B0, /* Light Gray */
+        #808080, /* Dark Gray */
+        #4A90E2, /* Blue */
+        #002080, /* Dark Blue */
+        #800000, /* Dark Red */
+        #000000  /* Black */
+    );
+    border: 1px solid #000;
+}
+.labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 300px;
+    color: white;
+}
+.labels span {
+    font-size: 14px;
+    color: #f9f9f9;
+}
+.heatmap-container {
+    position: absolute;
+    margin-top: 20px;
+    background: transparent;
+}
+img {
+    max-width: 90%;
+    background: transparent;
+    color: transparent;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0px 10px 15px;
+    background-color: transparent ;
+    border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0px 10px 15px;
+    background-color: transparent ;
+    border-bottom: 1px solid rgb(255, 255, 255);
+    /*margin-right: -10px;*/
+}
+
+.menu {
+    height: 60px;
+    padding-top: 10px;
+    display: flex;
+    list-style: none;
+    text-align: center;
+    justify-content: center; /* Centers the items */
+    gap: 30px; 
+}
+
+.menu-item-curr {
+    margin: 0 10px;
+    position: relative;
+    margin-bottom: 10px;
+    padding: 10px 20px; /* Adds equal spacing inside */
+    margin-bottom: 10px;
+}
+
+.menu-item {
+    margin: 0 10px;
+    position: relative;
+    margin-bottom: 10px;
+    padding: 10px 20px; /* Adds equal spacing inside */
+    margin-bottom: 10px;
+}
+
+.menu-item li, .menu-item-curr li {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.menu-item a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.4rem;
+    display: inline-block;
+    text-align: center;
+}
+
+.menu-item-curr a {
+    text-decoration: none;
+    color: #da7b7b;
+    font-size: 1.4rem;
+    font-weight: bolder;
+    display: inline-block;
+    text-align: center;
+}
+
+
+.logoutbtn {
+    margin-top: 2px;
+    margin-right: 25px;
+    background-color: #d70010;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+}
+
+.logoutbtn a {
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+}
+
+.verticalnav {
+    height: 733px;
+    margin: 0;
+    padding: 0;
+    width: 350px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.verticalnav ul {
+    list-style-type: none;   
+}
+  
+.verticalnav li a {
+    display: block;
+    color: #000;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+  
+.verticalnav li {
+    padding-top: 10px;
+    text-align: center;
+    height: 70px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+  
+.verticalnav li:last-child {
+    border-bottom: none;
+}
+  
+.verticalnav li.active {
+    /*background-color: red;
+    color: white;*/
+    
+    border-radius: 10px;
+}
+  
+.verticalnav li:hover:not(.active) {
+    background-color: #555;
+    color: white;
+}
+
+.crusher-container {
+    position: relative;
+    width: 1600px;
+    height: 300px;
+}
+
+/* Rollers */
+.croller {
+    display: block;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f8f8;
+    overflow: hidden;
+    top: 92px;
+    left: 350px;
+}
+
+.roller {
+    width: 500px;
+    height: 500px;
+    background: #888;
+    border-radius: 50%;
+    position: absolute;
+    top: 400px;
+    transform: translateY(-50%);
+    box-shadow: inset -10px -10px 20px #555, inset 10px 10px 20px #aaa;
+}
+
+.left-roller {
+    left: 290px;
+    animation: rotateClockwise 3s linear infinite;
+}
+
+.right-roller {
+    right: 290px;
+    animation: rotateCounterClockwise 3s linear infinite;
+}
+
+/* Animation for rotating rollers */
+@keyframes rotateClockwise {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+@keyframes rotateCounterClockwise {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(-360deg); }
+}
+
+/* Falling Cement */
+.cement {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background: #d4a373;
+    border-radius: 50%;
+    animation: fallCement 2.5s linear infinite;
+}
+
+@keyframes fallCement {
+    0% { top: -100px; opacity: 1; transform: scale(1); }
+    50% { top: 150px; transform: scale(0.8); }  /* Midway (slightly smaller) */
+    100% { top: 250px; opacity: 0; transform: scale(0.3); }  /* Completely crushed */
+}
+
+/* Create multiple falling cement particles */
+.cement:nth-child(3) { left: 47%; animation-delay: 0.3s; }
+.cement:nth-child(4) { left: 53%; animation-delay: 0.6s; }
+.cement:nth-child(5) { left: 49%; animation-delay: 0.9s; }
+.cement:nth-child(6) { left: 51%; animation-delay: 1.2s; }
+
+.backimg {
+    position: absolute;
+    left: -5%;
+    filter: blur(10px);
+}
+
+.backimg2 {
+    position: absolute;
+    left: 68%;
+    top:53%;
+}
+
+.title{
+    position: absolute;
+    left: 65%;
+    font-size: 50px;
+    top: 76%;
+}
+
+.backbtn {
+    margin-top: 2px;
+    margin-right: -20px;
+    background-color: white;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+}
+
+.backbtn a {
+    padding: 15px;
+    text-decoration: none;
+    color: #d70010;
+}

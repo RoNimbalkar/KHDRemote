@@ -1,0 +1,230 @@
+/* Default Styles for Large Screens */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body, html {
+    height: 100%;
+    min-height: 100%;
+    overflow-y: scroll;
+}
+
+body {
+    background: rgb(0,0,0);
+    background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(130,118,120,1) 68%, rgba(0,0,0,1) 100%, rgba(255,255,255,1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.background-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.backimg {
+    position: absolute;
+    left: -5%;
+    top: 0%;
+    left: -8px;
+}
+
+.container {
+    position: relative;
+    top: 15px;
+    left: 650px;
+    display: flex;
+    height: 400px;
+    max-width: 1100px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.form-section {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    text-align: center;
+    text-decoration: double ;
+    margin-bottom: 20px;
+    background: -webkit-linear-gradient(#eee, #333);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+input, select, button {
+    width: 340px;
+    margin-bottom: 15px;
+    padding: 20px;
+    margin: 10px;
+    font-size: 1rem;
+    background: transparent;
+    border: 1px solid #000000;
+    border-radius: 5px;
+}
+
+input:focus, select:focus {
+    border-color: #ffffff;
+    outline: none;
+}
+
+input[type=text], input[type="password"] {
+    color: rgb(215, 213, 213);
+}
+
+button {
+    background-color: #f34d4d;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #bd2929;
+} 
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(5px);
+    z-index: 999;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    height: 250px;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px gray;
+    z-index: 1000;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.loginfail {
+    margin-top: 20px;
+    font-size: 30px;
+    padding: 10px;
+    font-weight: bolder;
+    background: -webkit-linear-gradient(#e33939, #333);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.errorMessage{
+    margin-top: 15px;
+}
+
+.modal button {
+    margin-top: 30px;
+    background: red;
+}
+
+/* Responsive Design for Screens < 1450px */
+@media screen and (max-width: 1460px) {
+    .backimg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 450px;
+        max-height: 350px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+    }
+
+    .form-section {
+        width: 100%;
+    }
+
+    input {
+        padding: 15px;
+        border: 1px solid #ffffff;
+    }
+
+    button {
+        padding: 15px;
+    }
+
+    h1 {
+        color: white;
+    }
+}
+
+@media (max-width: 435px) {
+    .container {
+        width: 100%;
+        max-width: 650px;
+        max-height: 450px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+    }
+
+    .form-section {
+        width: 100%;
+    }
+
+    input {
+        padding: 15px;
+        border: 1px solid #ffffff;
+        width: 530px;
+    }
+
+    button {
+        padding: 15px;
+        width: 530px;
+    }
+
+    h1 {
+        color: white;
+    }
+}

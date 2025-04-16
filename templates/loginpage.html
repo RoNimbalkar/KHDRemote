@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>KHD LOGIN</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loginpage.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+    <img src={{ url_for('static', filename='images/rpscanner-header1.png') }} height="825" width="1330" class="backimg">
+
+    <div class="container">
+        <div class="form-section">
+            <b><h1>KHD USER LOGIN</h1></b>
+            <form id="loginForm">
+                <input type="text" id="username" name="username" placeholder="Username" autocomplete="off" required>
+                <input type="password" id="password" name="password" placeholder="Password" autocomplete="off" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+    
+            fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `username=${username}&password=${password}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.location.href = data.redirect;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'LOGIN FAILED',
+                        text: 'Invalid credentials. Please try again!!',
+                        confirmButtonColor: '#4e4242'
+                    });
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+    
+</body>
+</html>

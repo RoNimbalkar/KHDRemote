@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heatmap Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pressanalysis.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+</head>
+<body>
+    <nav class="navbar">
+        <img src="{{ url_for('static', filename='images/KHDlogoTr.png') }}" alt="Fashion Collection" height="40" width="210">
+        <ul class="menu">
+            <button class="backbtn"><a href="{{ url_for('homepage') }}">BACK</a></button>
+            <button  class="logoutbtn"><a href="{{ url_for('logout') }}">LOGOUT</a></button>
+        </ul>
+    </nav>
+
+    <img src="{{ url_for('static', filename='images/rpscanner-header.png') }}" height="744" width="1420" class="backimg">
+
+    <div class="dropdown">
+        <button class="dropbtn" id="selectedRoller">SELECTED ROLLER : </button>
+        <div class="dropdown-content" id="dropdownMenu">
+            <a href="#" onclick="selectRoller(this, 'ROLLER 1')">ROLLER 1</a>
+            <a href="#" onclick="selectRoller(this, 'ROLLER 2')">ROLLER 2</a>
+        </div>
+    </div>  
+
+    <div class="heatmapCanvas">
+        <object id="heatmapObject" type="image/svg+xml" data=""></object>
+    </div>    
+
+    <script>
+        // Get location from URL query string
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+    
+        const locationName = getQueryParam('location');
+        let selectedRoller = null;
+    
+        function selectRoller(element, rollerName) {
+            // UI Update
+            document.querySelectorAll('.dropdown-content a').forEach(link => link.classList.remove('selected'));
+            element.classList.add('selected');
+        
+            document.getElementById("selectedRoller").innerText = "SELECTED ROLLER : " + rollerName;
+            selectedRoller = rollerName === "ROLLER 1" ? "1" : "2";
+        
+            const imageId = (locationName || "").toLowerCase().replace(/\s+/g, "") + "_" + selectedRoller;
+            const svgContainer = document.querySelector('.heatmapCanvas');
+        
+            // Clear the current SVG object and re-create it to reload it
+            svgContainer.innerHTML = ''; // Clear the existing content
+        
+            // Create a new object element
+            const svgObject = document.createElement('object');
+            svgObject.id = 'heatmapObject';  // Set the id if you need to reference it later
+            svgObject.type = 'image/svg+xml';
+            svgObject.data = `/heatmap/${imageId}`;  // Point it to the new heatmap
+        
+            // Append the new object to the container
+            svgContainer.appendChild(svgObject);
+        
+            // Check if the SVG is available
+            svgObject.onload = function() {
+                console.log('SVG loaded successfully');
+            };
+        
+            svgObject.onerror = function() {
+                Swal.fire({
+                    title: "No Heatmap Found",
+                    text: "The heatmap for the selected roller is not available. Please try again later.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                });
+            };
+        }
+    </script>
+         
+</body>
+</html>

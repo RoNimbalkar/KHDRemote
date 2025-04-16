@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Navbar</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage.css') }}">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    </head>
+    <body>
+        <nav class="navbar">
+            <img src="{{ url_for('static', filename='images/KHDlogoTr.png') }}" alt="Fashion Collection" height="40" width="210">
+            <ul class="menu">
+                <button class="logoutbtn"><a href="{{ url_for('logout') }}">LOGOUT</a></button>
+            </ul>
+        </nav>
+
+        <div class="dropdown">
+            <div class="dropdown-header" onclick="toggleDropdown()">
+              <span>SELECT LOCATION</span>
+              <img src="{{ url_for('static', filename='images/locatiobB.png') }}" alt="Location Icon">
+            </div>
+            <div class="dropdown-list" id="dropdownList">
+              <!-- Options will be injected by JS -->
+            </div>
+        </div>
+        
+        <button class="viewscanbtn" id="viewScanBtn">VIEW SCAN ANALYSIS</button>
+
+        <div>
+            <h1 class="title">ROLLER<br>HEALTH MONITORING</h1>
+            <img src="{{ url_for('static', filename='images/rpscanner-header.png') }}" height="743" width="1420" class="backimg">
+        </div>
+
+        <script>
+            function toggleDropdown() {
+            const list = document.getElementById('dropdownList');
+            list.style.display = list.style.display === 'block' ? 'none' : 'block';
+            }
+            
+            // Close dropdown if clicked outside
+            window.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.dropdown');
+            if (!dropdown.contains(e.target)) {
+                document.getElementById('dropdownList').style.display = 'none';
+            }
+            });
+            
+            // Generate 100 roller items dynamically
+            window.onload = function () {
+                const list = document.getElementById('dropdownList');
+                const cities = [
+                    "MUMBAI", "DELHI", "BENGALURU", "HYDERABAD", "AHMEDABAD", "CHENNAI", "KOLKATA", "PANIPAT", "PUNE", "JAIPUR",
+                    "LUCKNOW", "KANPUR", "NAGPUR", "INDORE", "THANE", "BHOPAL", "VISAKHAPATNAM", "PATNA", "VADODARA", "GHAZIABAD",
+                    "LUDHIANA", "AGRA", "NASHIK", "FARIDABAD", "MEERUT", "RAJKOT", "KALYAN-DOMBIVLI", "VASAI-VIRAR", "VARANASI", "SRINAGAR",
+                    "AURANGABAD", "DHANBAD", "AMRITSAR", "NAVI MUMBAI", "ALLAHABAD", "RANCHI", "HOWRAH", "COIMBATORE", "JABALPUR", "GWALIOR",
+                    "VIJAYAWADA", "JODHPUR", "MADURAI", "RAIPUR", "KOTA", "GUWAHATI", "CHANDIGARH", "SOLAPUR", "HUBLI-DHARWAD", "BAREILLY",
+                    "MYSURU", "MORADABAD", "TIRUCHIRAPPALLI", "GURGAON", "ALIGARH", "JALANDHAR", "BHUBANESWAR", "SALEM", "WARANGAL", "GUNTUR",
+                    "BHIWANDI", "SAHARANPUR", "GORAKHPUR", "BIKANER", "AMRAVATI", "NOIDA", "JAMSHEDPUR", "BHILAI", "CUTTACK", "FIROZABAD",
+                    "KOCHI", "NELLORE", "BHAVNAGAR", "DEHRADUN", "DURGAPUR", "ASANSOL", "ROURKELA", "NANDED", "KOLHAPUR", "AJMER",
+                    "AKOLA", "GULBARGA", "JAMNAGAR", "UJJAIN", "LONI", "SILIGURI", "JHANSI", "ULHASNAGAR", "JAMMU", "SANGLI",
+                    "MANGALORE", "ERODE", "BELGAUM", "AMBATTUR", "TIRUNELVELI", "MALEGAON", "GAYA", "JALGAON", "UDAIPUR", "MAHESHTALA"
+                ];
+                
+                for (let i = 0; i < cities.length; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'dropdown-item';
+                    item.textContent = cities[i];
+                    item.onclick = () => {
+                        document.querySelector('.dropdown-header span').textContent = cities[i];
+                        list.style.display = 'none';
+            
+                        const btn = document.getElementById("viewScanBtn");
+                        btn.disabled = false;
+                        btn.setAttribute('data-location', cities[i]);
+                    };
+            
+                    list.appendChild(item);
+                }
+            };            
+
+            document.getElementById("viewScanBtn").addEventListener("click", () => {
+                console.log("Button clicked!");
+                const location = document.getElementById("viewScanBtn").getAttribute("data-location");
+                console.log("Button clicked!",location);
+                if (!location) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Location Selected',
+                        text: 'Please select a location before proceeding!',
+                    });
+                } else {
+                    window.location.href = "/pressanalysis?location=" + encodeURIComponent(location);
+                }
+            });                      
+        </script>        
+    </body>
+</html>
