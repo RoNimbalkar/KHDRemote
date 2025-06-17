@@ -6,6 +6,8 @@ import os
 import subprocess
 import webbrowser
 import threading
+import gridfs
+import base64
 
 app = Flask(__name__)
 app.secret_key = 'my_secure_secret_key'
@@ -63,35 +65,57 @@ def pressanalysis():
     response.headers['Expires'] = '0'
     return response
 
+from flask import Response, jsonify
+from pymongo import MongoClient
+
+import base64
+from flask import jsonify, Response
+
 @app.route('/heatmap/<image_id>')
 def serve_heatmap(image_id):
-    """
-    Endpoint to serve the SVG from MongoDB if it exists.
-    Expects image_id = location_rollerNumber (e.g. nagpur_1)
-    """
+    print(image_id)
     MONGO_URI = "mongodb+srv://khduser:khduser@khddemo.s8c1q.mongodb.net/?retryWrites=true&w=majority&appName=KHDDemo"
-    client = MongoClient(MONGO_URI)
-    db = client["heatmap_db"]
-    collection = db["heatmaps"]
-    
     try:
-        doc = collection.find_one({"_id": image_id})
-        #print(image_id)
-        if doc:
-            print("Document found:")
-        else:
-            print("Document not found for pune_1")
+        client = MongoClient(MONGO_URI)
+        db = client["your_db"]
+        fs = gridfs.GridFS(db)
+        meta_collection = db["svg_metadata"]  # Make sure to match your insert logic
 
-        #print(image_id)
-        if doc and 'svg' in doc:
-            svg_data = doc['svg']
-            response = Response(svg_data, mimetype='image/svg+xml')
-            return response
-        else:
-            return jsonify({"error": "SVG not found for selected roller and location"}), 404
+        # Fetch metadata
+        doc = meta_collection.find_one({"_id": image_id})
+        if not doc or "svg_ids" not in doc:
+            return jsonify({"error": f"No metadata or SVG references found for ID: {image_id}"}), 404
+
+        svg_ids = doc["svg_ids"]
+        ordered_fields = [
+            "svg", "svgheatmap", "linechart", "comninedgraph",
+            "profile15", "profile35", "profile60", "profile80",
+            "profile105", "profile125", "profile150", "profile170",
+            "profile195", "profile215", "profile240", "profile260",
+            "profile285", "profile305", "profile330", "profile350"
+        ]
+
+        svg_data = {}
+
+        for index, file_id in enumerate(svg_ids):
+            try:
+                name = ordered_fields[index] if index < len(ordered_fields) else f"svg_{index}"
+
+                grid_out = fs.get(file_id)
+                file_data = grid_out.read()
+
+                if file_data.strip().startswith(b'<?xml') or b'<svg' in file_data[:100]:
+                    svg_data[name] = file_data.decode('utf-8')
+                else:
+                    b64_data = base64.b64encode(file_data).decode('utf-8')
+                    svg_data[name] = f"data:image/png;base64,{b64_data}"
+            except Exception as e:
+                svg_data[name] = f"Error reading file: {str(e)}"
+
+        return jsonify(svg_data)
+
     except Exception as e:
-        return jsonify({"error": f"Error fetching SVG: {str(e)}"}), 500
-
+        return jsonify({"error": f"Error fetching SVGs: {str(e)}"}), 500
 
 @app.route('/logout')
 def logout():
