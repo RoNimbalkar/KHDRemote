@@ -16,6 +16,80 @@ body {
     max-height: 744px;
 }
 
+.barcontainer {
+    position: fixed;
+      top: 470px;
+      left: 50px;
+      display: inline-block;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      z-index: 9999;
+      color: white;
+    }
+    .chart {
+      display: grid;
+      grid-template-columns: auto 150px auto; /* fixed bars width */
+      gap: 10px;
+      align-items: center;
+    }
+    .labels-left, .labels-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100px; /* match bar area height */
+    }
+    .labels-left span, .labels-right span {
+      font-size: 10px;
+      font-weight: bold;
+      line-height: 1;
+    }
+    .bars {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100px;
+      width: 150px;
+    }
+    .bar {
+      height: calc(100px / 9); /* 9 bars in 100px total */
+      width: 100%;
+      margin-top: 0px;
+      border: 1px solid #ccc;
+      background-color: transparent;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .fill {
+      height: 100%;
+    }
+    .bar-1  { background-color: #00796B; width: 3%; }
+    .bar-2  { background-color: #388E3C; width: 3%; }
+    .bar-3  { background-color: #8BC34A; width: 21%; }
+    .bar-4  { background-color: #CDDC39; width: 72%; }
+    .bar-5  { background-color: #FFEB3B; width: 6%; }
+    .bar-6  { background-color: #FFC107; width: 3%; }
+    .bar-7  { background-color: #FF9800; width: 3%; }
+    .bar-8  { background-color: #FF5722; width: 3%; }
+    .bar-9  { background-color: #F44336; width: 3%; }
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 5px; /* Increase this value to add more space between bars */
+}
+
+.labels-left, .labels-right{
+    display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 6px; /* Increase this value to add more space between bars */
+}
+
+
 .backgrnd {
     position: relative;
     left: 350px;
@@ -24,6 +98,13 @@ body {
     width: 1300px;
     background: transparent;
 }
+
+div svg {
+  width: 100%;
+  height: auto;
+  background-color: white; /* Optional: so dark shapes are visible */
+}
+
 
 #heatmap {
     width: 1300px;
@@ -76,6 +157,68 @@ body {
     background-color: red; /* Default color */
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
     transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#heatmapViewer {
+    position: fixed;
+    left: 250px;
+    top: 110px;
+    width: 800px;
+    z-index: 10;
+    background: transparent;
+    min-height: 90vh;
+}
+  
+  .heatmapviewer.hidden {
+    opacity: 0; /* Fade it out */
+    visibility: hidden; /* Hide it completely when scrolled */
+    width: 100px;
+  }
+  
+#heatmapViewer img {
+    z-index: 20;
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+}
+#heatmapViewer object {
+    z-index: 20;
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    height: auto;
+    z-index: 9000;
+}
+
+#heatmapViewer2 {
+    position: absolute;
+    left: 1080px;
+    top: 120px;
+    width: 580px;
+    z-index: 10;
+    background: transparent;
+    min-height: 100vh;
+}
+  
+  .heatmapviewer2.hidden {
+    opacity: 0; /* Fade it out */
+    visibility: hidden; /* Hide it completely when scrolled */
+    width: 100px;
+  }
+  
+#heatmapViewer2 img {
+    z-index: 20;
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+}
+#heatmapViewer2 object {
+    z-index: 20;
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    height: auto;
+    z-index: 9000;
 }
 
 .colorbar-container {
@@ -168,10 +311,10 @@ body {
 }
 
 .dropdown {
-    position: relative;
+    position: fixed;
     display: inline-block;
     left: 38px;
-    top: 250px;
+    top: 300px;
 }
 
 .dropdown-content {
@@ -254,22 +397,15 @@ img {
 }
 
 .navbar {
+    position: fixed;
     display: flex;
+    z-index: 9999;
+    width: 100%;
     justify-content: space-between;
     align-items: center;
     padding: 10px 0px 10px 15px;
     background-color: transparent ;
     border-bottom: 1px solid rgb(255, 255, 255);
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0px 10px 15px;
-    background-color: transparent ;
-    border-bottom: 1px solid rgb(255, 255, 255);
-    /*margin-right: -10px;*/
 }
 
 .menu {
@@ -456,13 +592,14 @@ img {
 .cement:nth-child(6) { left: 51%; animation-delay: 1.2s; }
 
 .backimg {
-    position: absolute;
+    position: fixed;
+    top: 90px;
     left: -5%;
     filter: blur(10px);
 }
 
 .backimg2 {
-    position: absolute;
+    position: fixed;
     left: 68%;
     top:53%;
 }
