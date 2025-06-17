@@ -7,6 +7,9 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pressanalysis.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+      <style>
+    
+  </style>
 </head>
 <body>
     <nav class="navbar">
@@ -29,9 +32,13 @@
 
     <div class="heatmapCanvas">
         <object id="heatmapObject" type="image/svg+xml" data=""></object>
-    </div>    
+    </div>
+    <div id="heatmapViewer" class="svg-viewer">
+    </div>
+    <div id="heatmapViewer2" class="svg-viewer2">
+    </div> 
 
-    <div class="colorbar-container">
+    <!--div class="colorbar-container">
         <div class="bar-labels">
           <div class="colorbar"></div>
           <div class="labels">
@@ -47,56 +54,186 @@
             <span>-21.0 mm</span>
           </div>
         </div>
+      </div-->
+    
+    <div class="barcontainer">
+    <div class="chart">
+      <div class="labels-left">
+        <span>+06 mm</span>
+        <span>+03 mm</span>
+        <span>+00 mm</span>
+        <span>-03 mm</span>
+        <span>-06 mm</span>
+        <span>-09 mm</span>
+        <span>-12 mm</span>
+        <span>-15 mm</span>
+        <span>-18 mm</span>
       </div>
+      <div class="bars">
+        <div class="bar"><div class="fill bar-1"></div></div>
+        <div class="bar"><div class="fill bar-2"></div></div>
+        <div class="bar"><div class="fill bar-3"></div></div>
+        <div class="bar"><div class="fill bar-4"></div></div>
+        <div class="bar"><div class="fill bar-5"></div></div>
+        <div class="bar"><div class="fill bar-6"></div></div>
+        <div class="bar"><div class="fill bar-7"></div></div>
+        <div class="bar"><div class="fill bar-8"></div></div>
+        <div class="bar"><div class="fill bar-9"></div></div>
+      </div>
+      <div class="labels-right">
+        <span>+03 mm</span>
+        <span>+00 mm</span>
+        <span>+03 mm</span>
+        <span>-06 mm</span>
+        <span>-09 mm</span>
+        <span>-12 mm</span>
+        <span>-15 mm</span>
+        <span>-18 mm</span>
+        <span>-21 mm</span>
+      </div>
+    </div>
+    </div>
 
     <script>
-        // Get location from URL query string
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
-    
+
         const locationName = getQueryParam('location');
+        console.log(locationName)
         let selectedRoller = null;
-    
+
         function selectRoller(element, rollerName) {
-            // UI Update
+            // === UI Update ===
             document.querySelectorAll('.dropdown-content a').forEach(link => link.classList.remove('selected'));
             element.classList.add('selected');
-        
+
             document.getElementById("selectedRoller").innerText = "SELECTED ROLLER : " + rollerName;
             selectedRoller = rollerName === "ROLLER 1" ? "1" : "2";
-        
+
             const imageId = (locationName || "").toLowerCase().replace(/\s+/g, "") + "_" + selectedRoller;
-            const svgContainer = document.querySelector('.heatmapCanvas');
-        
-            // Clear the current SVG object and re-create it to reload it
-            svgContainer.innerHTML = ''; // Clear the existing content
-        
-            // Create a new object element
-            const svgObject = document.createElement('object');
-            svgObject.id = 'heatmapObject';  // Set the id if you need to reference it later
-            svgObject.type = 'image/svg+xml';
-            svgObject.data = `/heatmap/${imageId}`;  // Point it to the new heatmap
-        
-            // Append the new object to the container
-            svgContainer.appendChild(svgObject);
-        
-            // Check if the SVG is available
-            svgObject.onload = function() {
-                console.log('SVG loaded successfully');
-            };
-        
-            svgObject.onerror = function() {
-                Swal.fire({
-                    title: "No Heatmap Found",
-                    text: "The heatmap for the selected roller is not available. Please try again later.",
-                    icon: "error",
-                    confirmButtonText: "OK",
+
+            // === Clear viewers ===
+            const viewer1 = document.getElementById("heatmapViewer");
+            const viewer2 = document.getElementById("heatmapViewer2");
+            viewer1.innerHTML = '';
+            viewer2.innerHTML = '';
+
+            // === Fetch all SVGs/PNGs as JSON ===
+            fetch(`/heatmap/${imageId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("SVGs not found");
+                    }
+                    return response.json();
+                })
+                .then(svgData => {
+                    if (Object.keys(svgData).length === 0) {
+                        throw new Error("No SVGs in document");
+                    }
+
+                    const orderedFields = [
+                        "svg", "svgheatmap", "linechart", "comninedgraph",
+                        "profile15", "profile35", "profile60", "profile80",
+                        "profile105", "profile125", "profile150", "profile170",
+                        "profile195", "profile215", "profile240", "profile260",
+                        "profile285", "profile305", "profile330", "profile350"
+                    ];
+
+                    for (const name of orderedFields) {
+                        const content = svgData[name];
+                        if (!content) continue;
+
+                        const title = document.createElement('h4');
+
+                        let displayName;
+                        if (name.toUpperCase() === 'LINECHART') {
+                            displayName = 'LINECHART';
+                        } else if (name.toUpperCase().startsWith('PROFILE')) {
+                            const angle = name.slice(7); // Get the number after "PROFILE"
+                            displayName = `PROFILE ${angle}°`;
+                        } else {
+                            displayName = name.toUpperCase();
+                        }
+
+                        title.innerText = displayName;
+                        title.style.marginTop = '20px';
+                        title.style.color = 'white';
+
+                        const container = document.createElement('div');
+                        container.style.border = "1px solid #ccc";
+                        container.style.marginBottom = "30px";
+                        container.style.padding = "10px";
+
+                        if (typeof content === 'string' && content.startsWith("data:image/png;base64,")) {
+                            // === It's a base64 PNG ===
+                            const img = document.createElement('img');
+                            img.src = content;
+                            img.style.maxWidth = "600px";
+                            img.style.display = "block";
+                            img.onerror = function () {
+                                console.error(`Failed to load image`);
+                                img.style.display = "none";
+                            };
+
+                            viewer2.appendChild(title);
+                            viewer2.appendChild(img);
+
+                        } else if (typeof content === 'string' && content.startsWith("<svg")) {
+                            // === It's raw SVG content ===
+                            const blob = new Blob([content], { type: "image/svg+xml" });
+                            const url = URL.createObjectURL(blob);
+
+                            const svgObject = document.createElement('object');
+                            svgObject.data = url;
+                            svgObject.type = 'image/svg+xml';
+                            svgObject.style.width = "100%";
+                            svgObject.style.height = "700px";
+                            svgObject.style.display = "block";
+                            svgObject.onerror = function () {
+                                console.error(`Failed to load SVG from blob URL`);
+                            };
+
+                            viewer1.appendChild(svgObject);
+
+                        } else {
+                            // fallback (not expected)
+                            container.innerHTML = content;
+                            viewer2.appendChild(title);
+                            viewer2.appendChild(container);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading SVGs:", error);
+                    Swal.fire({
+                        title: "No Heatmap Found",
+                        text: "The heatmaps for the selected roller are not available. Please try again later.",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
                 });
-            };
         }
     </script>
-         
+        <script>
+        const viewer = document.getElementById('heatmapViewer2');
+        const navbarHeight = 100;
+        let ticking = false;
+      
+        function updateClipPath() {
+          const rect = viewer.getBoundingClientRect();
+          const hiddenHeight = Math.max(navbarHeight - rect.top, 0);
+          viewer.style.clipPath = `inset(${hiddenHeight}px 0px 0px 0px)`;
+          ticking = false;
+        }
+      
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            window.requestAnimationFrame(updateClipPath);
+            ticking = true;
+          }
+        });
+      </script>
 </body>
 </html>
