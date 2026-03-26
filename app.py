@@ -71,51 +71,147 @@ from pymongo import MongoClient
 import base64
 from flask import jsonify, Response
 
+from flask import Flask, jsonify
+from pymongo import MongoClient
+import gridfs
+import io, zipfile, base64
+from flask import jsonify
+from pymongo import MongoClient
+import gridfs
+import zipfile
+import io
+import os
+import base64
+
+from flask import jsonify
+from pymongo import MongoClient
+import gridfs
+import io, zipfile, base64, os
+
+# @app.route('/heatmap/<image_id>')
+# def serve_heatmap(image_id):
+#     print(f"🔍 Fetching heatmap for: {image_id}")
+#     MONGO_URI = "mongodb+srv://khduser:khduser@khddemo.s8c1q.mongodb.net/?retryWrites=true&w=majority&appName=KHDDemo"
+
+#     try:
+#         # Step 1: Connect to MongoDB and GridFS
+#         client = MongoClient(MONGO_URI)
+#         db = client["your_db"]
+#         fs = gridfs.GridFS(db)
+#         meta_collection = db["svg_metadata"]
+
+#         # Step 2: Fetch metadata
+#         doc = meta_collection.find_one({"_id": image_id})
+#         if not doc or "zip_file_id" not in doc:
+#             return jsonify({"error": f"No ZIP reference found for ID: {image_id}"}), 404
+
+#         # Step 3: Read ZIP from GridFS
+#         zip_file_id = doc["zip_file_id"]
+#         zip_stream = fs.get(zip_file_id)
+#         zip_bytes = zip_stream.read()
+
+#         # Step 4: Unzip and classify contents
+#         zip_buffer = io.BytesIO(zip_bytes)
+#         file_map = {}
+
+#         with zipfile.ZipFile(zip_buffer, 'r') as zipf:
+#             print("📦 ZIP Contents:", zipf.namelist())
+
+#             for file_name in zipf.namelist():
+#                 with zipf.open(file_name) as f:
+#                     content = f.read()
+#                     print(f"➤ Processing file: {file_name} | Size: {len(content)} bytes")
+
+#                     name = os.path.basename(file_name).strip()
+#                     name_key = os.path.splitext(name)[0].lower()
+
+#                     # Detect type by content if no extension
+#                     if content.strip().startswith(b'<svg'):
+#                         try:
+#                             file_map[name_key] = content.decode('utf-8')
+#                             print(f"✅ Treated as SVG: {name_key}")
+#                         except Exception as e:
+#                             file_map[name_key] = f"Error decoding SVG: {str(e)}"
+#                     elif content[:4] == b'\x89PNG':  # PNG signature
+#                         b64_img = base64.b64encode(content).decode('utf-8')
+#                         file_map[name_key] = f"data:image/png;base64,{b64_img}"
+#                         print(f"🖼️ Treated as PNG: {name_key}")
+#                     else:
+#                         file_map[name_key] = "Unsupported file type"
+#                         print(f"❌ Unknown file type: {name_key}")
+
+#         return jsonify(file_map)
+
+#     except Exception as e:
+#         return jsonify({"error": f"Error fetching or extracting ZIP: {str(e)}"}), 500
+
+
+from bson.objectid import ObjectId
+import traceback
+
 @app.route('/heatmap/<image_id>')
 def serve_heatmap(image_id):
-    print(image_id)
-    MONGO_URI = "mongodb+srv://khduser:khduser@khddemo.s8c1q.mongodb.net/?retryWrites=true&w=majority&appName=KHDDemo"
+    print(f"🔍 Fetching heatmap for: {image_id}")
+
+    # MONGO_URI = "mongodb+srv://khduser:khduser@khddemo.s8c1q.mongodb.net/?retryWrites=true&w=majority&appName=KHDDemo"
+    MONGO_URI = "mongodb+srv://khduser:khduser@cluster0.wtu9c.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
     try:
         client = MongoClient(MONGO_URI)
+
+        # ✅ FIX DB NAME
+        # db = client["cluster0"]
         db = client["your_db"]
+        
+
         fs = gridfs.GridFS(db)
-        meta_collection = db["svg_metadata"]  # Make sure to match your insert logic
+        meta_collection = db["svg_metadata"]
 
-        # Fetch metadata
+        # ✅ FIX QUERY
         doc = meta_collection.find_one({"_id": image_id})
-        if not doc or "svg_ids" not in doc:
-            return jsonify({"error": f"No metadata or SVG references found for ID: {image_id}"}), 404
 
-        svg_ids = doc["svg_ids"]
-        ordered_fields = [
-            "svg", "svgheatmap", "linechart", "comninedgraph",
-            "profile15", "profile35", "profile60", "profile80",
-            "profile105", "profile125", "profile150", "profile170",
-            "profile195", "profile215", "profile240", "profile260",
-            "profile285", "profile305", "profile330", "profile350"
-        ]
+        if not doc:
+            return jsonify({"error": f"No document found for ID: {image_id}"}), 404
 
-        svg_data = {}
+        if "zip_file_id" not in doc:
+            return jsonify({"error": "zip_file_id missing in document"}), 500
 
-        for index, file_id in enumerate(svg_ids):
-            try:
-                name = ordered_fields[index] if index < len(ordered_fields) else f"svg_{index}"
+        zip_file_id = doc["zip_file_id"]
 
-                grid_out = fs.get(file_id)
-                file_data = grid_out.read()
+        # ✅ FIX ObjectId
+        zip_stream = fs.get(ObjectId(zip_file_id))
+        zip_bytes = zip_stream.read()
 
-                if file_data.strip().startswith(b'<?xml') or b'<svg' in file_data[:100]:
-                    svg_data[name] = file_data.decode('utf-8')
-                else:
-                    b64_data = base64.b64encode(file_data).decode('utf-8')
-                    svg_data[name] = f"data:image/png;base64,{b64_data}"
-            except Exception as e:
-                svg_data[name] = f"Error reading file: {str(e)}"
+        zip_buffer = io.BytesIO(zip_bytes)
+        file_map = {}
 
-        return jsonify(svg_data)
+        with zipfile.ZipFile(zip_buffer, 'r') as zipf:
+            print("📦 ZIP Contents:", zipf.namelist())
+
+            for file_name in zipf.namelist():
+                with zipf.open(file_name) as f:
+                    content = f.read()
+
+                    name = os.path.basename(file_name).strip()
+                    name_key = os.path.splitext(name)[0].lower()
+
+                    if content.strip().startswith(b'<svg'):
+                        file_map[name_key] = content.decode('utf-8')
+
+                    elif content[:4] == b'\x89PNG':
+                        b64_img = base64.b64encode(content).decode('utf-8')
+                        file_map[name_key] = f"data:image/png;base64,{b64_img}"
+
+                    else:
+                        file_map[name_key] = "Unsupported file type"
+
+        return jsonify(file_map)
 
     except Exception as e:
-        return jsonify({"error": f"Error fetching SVGs: {str(e)}"}), 500
+        print("❌ ERROR:", str(e))
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/logout')
 def logout():
